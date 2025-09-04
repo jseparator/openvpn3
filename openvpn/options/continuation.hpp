@@ -228,10 +228,10 @@ class OptionListContinuation : public OptionList
             throw push_update_unsupported_option(string::join(unsupported_mandatory_options, ","));
         }
 
-        if (!unsupported_optional_options.empty())
-        {
-            OPENVPN_LOG("Unsupported optional options: " << string::join(unsupported_optional_options, ","));
-        }
+//        if (!unsupported_optional_options.empty())
+//        {
+//            OPENVPN_LOG("Unsupported optional options: " << string::join(unsupported_optional_options, ","));
+//        }
     }
 
     static bool continuation(const OptionList &opt)

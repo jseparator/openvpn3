@@ -1542,8 +1542,8 @@ class OptionList : public std::vector<Option>, public RCCopyable<thread_unsafe_r
         {
             if (!title)
                 title = "NOTE: Unused Options";
-            OPENVPN_LOG_NTNL(title << std::endl
-                                   << render(Option::RENDER_TRUNC_64 | Option::RENDER_NUMBER | Option::RENDER_BRACKET | Option::RENDER_UNUSED));
+//            OPENVPN_LOG_NTNL(title << std::endl
+//                                   << render(Option::RENDER_TRUNC_64 | Option::RENDER_NUMBER | Option::RENDER_BRACKET | Option::RENDER_UNUSED));
         }
     }
 
