@@ -571,6 +571,7 @@ class TunProp
     {
         // Example:
         //   [dhcp-option] [WINS] [172.16.0.23]
+        //   [dhcp-option] [PROXY]
         //   [dhcp-option] [PROXY_HTTP] [foo.bar.gov] [1234]
         //   [dhcp-option] [PROXY_HTTPS] [foo.bar.gov] [1234]
         //   [dhcp-option] [PROXY_BYPASS] [server1] [server2] ...
@@ -579,6 +580,7 @@ class TunProp
         OptionList::IndexMap::const_iterator dopt = opt.map().find("dhcp-option"); // DIRECTIVE
         if (dopt != opt.map().end())
         {
+            bool proxy_vpn = false;
             std::string auto_config_url;
             std::string http_host;
             unsigned int http_port = 0;
@@ -594,6 +596,11 @@ class TunProp
                     {
                         // Ignore DNS related options here
                         continue;
+                    }
+                    else if (type == "PROXY")
+                    {
+                        o.exact_args(2);
+                        proxy_vpn = true;
                     }
                     else if (type == "PROXY_BYPASS")
                     {
@@ -646,6 +653,8 @@ class TunProp
             }
             try
             {
+                if (proxy_vpn && !tb->tun_builder_set_proxy_vpn())
+                    throw tun_prop_dhcp_option_error(ERR_INVALID_OPTION_PUSHED, "tun_builder_set_proxy_vpn");
                 if (!http_host.empty())
                 {
                     if (!tb->tun_builder_set_proxy_http(http_host, http_port))

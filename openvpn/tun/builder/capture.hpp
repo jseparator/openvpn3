@@ -791,6 +791,12 @@ class TunBuilderCapture : public TunBuilderBase, public RC<thread_unsafe_refcoun
         return true;
     }
 
+    bool tun_builder_set_proxy_vpn() override
+    {
+        proxy_vpn = true;
+        return true;
+    }
+
     /**
      * @brief Sets the %URL for a proxy auto-configuration (PAC) file.
      * @details Configures the VPN to use a PAC file at the specified %URL for determining
@@ -990,6 +996,8 @@ class TunBuilderCapture : public TunBuilderBase, public RC<thread_unsafe_refcoun
             render_list(os, "Proxy Bypass", proxy_bypass);
         if (proxy_auto_config_url.defined())
             os << "Proxy Auto Config URL: " << proxy_auto_config_url.to_string() << '\n';
+        if (proxy_vpn)
+            os << "Default outbound: OpenVPN\n";
         if (http_proxy.defined())
             os << "HTTP Proxy: " << http_proxy.to_string() << '\n';
         if (https_proxy.defined())
@@ -1030,6 +1038,7 @@ class TunBuilderCapture : public TunBuilderBase, public RC<thread_unsafe_refcoun
         json::from_vector(root, proxy_bypass, "proxy_bypass");
         if (proxy_auto_config_url.defined())
             root["proxy_auto_config_url"] = proxy_auto_config_url.to_json();
+        root["proxy_vpn"] = proxy_vpn;
         if (http_proxy.defined())
             root["http_proxy"] = http_proxy.to_json();
         if (https_proxy.defined())
@@ -1068,6 +1077,8 @@ class TunBuilderCapture : public TunBuilderBase, public RC<thread_unsafe_refcoun
         json::to_vector(root, tbc->wins_servers, "wins_servers", title);
         json::to_vector(root, tbc->proxy_bypass, "proxy_bypass", title);
         tbc->proxy_auto_config_url.from_json(root["proxy_auto_config_url"], "proxy_auto_config_url");
+        if (root.isMember("proxy_vpn"))
+            json::to_bool(root, tbc->proxy_vpn, "proxy_vpn", title);
         tbc->http_proxy.from_json(root["http_proxy"], "http_proxy");
         tbc->https_proxy.from_json(root["https_proxy"], "https_proxy");
         return tbc;
@@ -1093,6 +1104,7 @@ class TunBuilderCapture : public TunBuilderBase, public RC<thread_unsafe_refcoun
     DnsOptions dns_options;                     // VPN DNS related settings from --dns option
 
     std::vector<ProxyBypass> proxy_bypass; // hosts that should bypass proxy
+    bool proxy_vpn = false; // Local extension; included in persistent TUN comparisons.
     ProxyAutoConfigURL proxy_auto_config_url;
     ProxyHostPort http_proxy;
     ProxyHostPort https_proxy;

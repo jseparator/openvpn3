@@ -242,6 +242,12 @@ class TunBuilderBase
         return false;
     }
 
+    // Local extension: dhcp-option PROXY selects OpenVPN as the default outbound.
+    virtual bool tun_builder_set_proxy_vpn()
+    {
+        return false;
+    }
+
     /**
      * @brief Callback to set the proxy "Auto Config URL".
      *
